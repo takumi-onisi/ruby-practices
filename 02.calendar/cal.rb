@@ -26,7 +26,10 @@ end
 last_date = (first_date >> 1) -1
 current_date = first_date.clone
 gap = ' '
+day_padding = ' ' * 2
 # カレンダーの出力
+# 最初の日付の出力位置を調整
+print (day_padding + gap) * (first_date.cwday % 7)
 while current_date.day != last_date.day
   if current_date.saturday?
     puts format_two_digits(current_date.day)
@@ -36,3 +39,5 @@ while current_date.day != last_date.day
   end
   current_date += 1
 end
+
+puts
