@@ -1,5 +1,5 @@
 RANGE = 1..20
-RANGE.each do |num| 
+RANGE.each do |num|
   # 特定の倍数の時は出力内容を変える
   # 出力結果が判定の順番によって変化しないように条件で排他性を担保する
   case
