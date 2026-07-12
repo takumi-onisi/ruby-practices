@@ -1,2 +1,6 @@
 #!/usr/bin/env ruby
-puts 'hello'
+require 'optparse'
+
+options = ARGV.getopts('y:', 'm:')
+puts options['y']
+puts options['m']
