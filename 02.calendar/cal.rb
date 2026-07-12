@@ -35,15 +35,23 @@ puts
 print(['日','月','火','水','木','金','土'].join(gap))
 puts
 
-# 最初の日付の出力位置を調整
-print (day_padding + gap) * (first_date.cwday % 7)
+# 最初の日付を日曜日までセットバック
+current_date -= first_date.cwday
 while current_date.day != last_date.day
+
+  unless current_date.month == MONTH
+    print(day_padding + gap)
+    current_date += 1
+    next
+  end
+
   if current_date.saturday?
     puts format_two_digits(current_date.day)
   else
     print format_two_digits(current_date.day)
     print gap
   end
+
   current_date += 1
 end
 
