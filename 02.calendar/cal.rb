@@ -16,4 +16,15 @@ rescue
   puts '-yと-mのオプションを正しく渡しているか確認してください'
 end
 
-puts first_day
+
+last_date = (first_date >> 1) -1
+current_date = first_date.clone
+# カレンダーの出力
+while current_date.day != last_date.day
+  if current_date.saturday?
+    puts current_date.day
+  else
+    print current_date.day
+  end
+  current_date += 1
+end
