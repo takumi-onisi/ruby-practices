@@ -2,6 +2,12 @@
 require 'optparse'
 require 'date'
 
+# 1桁の数字と2桁の数字の位置揃えのためのパディングを行う
+def format_two_digits(num)
+  buffer = ' ' * (2 - num.to_s.length.to_i)
+  buffer + num.to_s
+end
+
 # カレンダーで表示させる 年 と 月 を初期化
 options = ARGV.getopts('y:', 'm:')
 # 指定がない場合は今日の 年 と 月を使用する
@@ -19,12 +25,14 @@ end
 
 last_date = (first_date >> 1) -1
 current_date = first_date.clone
+gap = ' '
 # カレンダーの出力
 while current_date.day != last_date.day
   if current_date.saturday?
-    puts current_date.day
+    puts format_two_digits(current_date.day)
   else
-    print current_date.day
+    print format_two_digits(current_date.day)
+    print gap
   end
   current_date += 1
 end
