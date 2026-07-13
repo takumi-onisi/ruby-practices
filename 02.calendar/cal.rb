@@ -29,7 +29,7 @@ gap = ' '
 day_padding = ' ' * 2
 # カレンダーの出力
 # 出力する 月 と 年を表示
-print "#{gap + (day_padding + gap) * 2}#{format_two_digits(first_date.month)}月 #{first_date.year}"
+print "#{(day_padding + gap) * 2}#{format_two_digits(first_date.month)}月 #{first_date.year}"
 puts
 # 曜日を出力
 print(['日','月','火','水','木','金','土'].join(gap))
