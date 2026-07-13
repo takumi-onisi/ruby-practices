@@ -2,12 +2,6 @@
 require 'optparse'
 require 'date'
 
-# 1桁の数字と2桁の数字の位置揃えのためのパディングを行う
-def format_two_digits(num)
-  buffer = ' ' * (2 - num.to_s.length.to_i)
-  buffer + num.to_s
-end
-
 # カレンダーで表示させる 年 と 月 を初期化
 options = ARGV.getopts('y:', 'm:')
 # 指定がない場合は今日の 年 と 月を使用する
@@ -22,17 +16,34 @@ rescue
   puts '-yと-mのオプションを正しく渡しているか確認してください'
 end
 
+# 1桁の数字と2桁の数字の位置揃えのためのパディングを行う
+def format_two_digits(num)
+  buffer = ' ' * (2 - num.to_s.length.to_i)
+  buffer + num.to_s
+end
+
+GAP = ' '
+DAY_PADDING = ' ' * 2
+
+if ENV['LANG'] == 'ja_JP.UTF-8'
+  HEADER = "#{(DAY_PADDING + GAP) * 2}#{format_two_digits(first_date.month)}月 #{first_date.year}"
+else
+  MONTHS = [ 'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December']
+  MONTH_EN = MONTHS[first_date.month - 1]
+  OVERALL_WIDTH = ((DAY_PADDING * 7) + (GAP * 6)).length
+  HEADER = "#{' ' * ((OVERALL_WIDTH - MONTH_EN.length - YEAR.to_s.length) / 2)}#{MONTH_EN} #{first_date.year}"
+end
+
 
 last_date = (first_date >> 1) -1
 current_date = first_date.clone
-gap = ' '
-day_padding = ' ' * 2
 # カレンダーの出力
 # 出力する 月 と 年を表示
-print "#{(day_padding + gap) * 2}#{format_two_digits(first_date.month)}月 #{first_date.year}"
+print HEADER
 puts
 # 曜日を出力
-print(['日','月','火','水','木','金','土'].join(gap))
+print(['日','月','火','水','木','金','土'].join(GAP))
 puts
 
 # 最初の日付を日曜日までセットバック
@@ -40,7 +51,7 @@ current_date -= first_date.cwday
 while current_date.day != last_date.day
 
   unless current_date.month == MONTH
-    print(day_padding + gap)
+    print(DAY_PADDING + GAP)
     current_date += 1
     next
   end
@@ -49,7 +60,7 @@ while current_date.day != last_date.day
     puts format_two_digits(current_date.day)
   else
     print format_two_digits(current_date.day)
-    print gap
+    print GAP
   end
 
   current_date += 1
