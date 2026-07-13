@@ -46,9 +46,12 @@ puts
 print(['日','月','火','水','木','金','土'].join(GAP))
 puts
 
-# 最初の日付を日曜日までセットバック
-current_date -= first_date.cwday
-while current_date.day != last_date.day
+# 最初の日付が日曜日以外の時
+if first_date.cwday != 7
+  # 日曜日までセットバック
+  current_date -= first_date.cwday
+end
+while (current_date <=> last_date) != 0
 
   unless current_date.month == MONTH
     print(DAY_PADDING + GAP)
