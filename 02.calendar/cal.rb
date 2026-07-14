@@ -22,6 +22,7 @@ class Calendar
     buffer + num.to_s
   end
 
+  # カレンダーの月を返す
   def get_month_to_show(lang)
     if lang == 'ja_JP.UTF-8'
       "#{format_two_digits(@first_date.month)}月"
@@ -30,6 +31,7 @@ class Calendar
     end
   end
 
+  # カレンダーのヘッダーを返す
   def get_header_contents(lang)
     if lang == 'ja_JP.UTF-8'
       month = get_month_to_show(lang)
@@ -40,6 +42,7 @@ class Calendar
     end
   end
 
+  # カレンダーの曜日の行を返す
   def get_weekdays_row(lang)
     if lang == 'ja_JP.UTF-8'
       JAPANESE_WEEKDAYS.join(GAP)
@@ -48,14 +51,17 @@ class Calendar
     end
   end
 
+  # カレンダーのヘッダーを出力する
   def print_header(lang)
     print (get_header_contents(lang))
   end
 
+  # カレンダーの曜日の行を出力する
   def print_weekdays(lang)
     print get_weekdays_row(lang)
   end
 
+  # カレンダーの各日にちを出力する
   def print_dates
     last_date = (@first_date >> 1) -1
     current_date = @first_date.clone
@@ -66,20 +72,24 @@ class Calendar
       current_date -= @first_date.cwday
     end
 
+    # 最終日を超えるまで繰り返す
     while (current_date <=> last_date) < 1
 
       unless current_date.month == @first_date.month
+        # 位置調整用スペーサーのみを出力して日を進める
         print(DAY_PADDING + GAP)
         current_date += 1
         next
       end
       if current_date.saturday?
+        # 土曜日の時は折り返す
         puts format_two_digits(current_date.day)
       else
         print format_two_digits(current_date.day)
         print GAP
       end
 
+      # 日を進める
       current_date += 1
     end
   end
