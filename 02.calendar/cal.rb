@@ -97,8 +97,13 @@ MONTH = options['m'] ? options['m'].to_i : Date.today.month
 begin
   calendar = Calendar.new(YEAR, MONTH)
 rescue
-  puts 'エラー : カレンダーの生成に失敗しました'
-  puts '-yと-mのオプションを正しく渡しているか確認してください'
+  if ENV['LANG'] == 'ja_JP.UTF-8'
+    puts 'エラー : カレンダーの生成に失敗しました'
+    puts '-yと-mのオプションを正しく渡しているか確認してください'
+  else
+    puts 'Error: Failed to generate the calendar.'
+    puts 'Please check that the -y and -m options are specified correctly.'
+  end
 end
 
 # カレンダーの出力
