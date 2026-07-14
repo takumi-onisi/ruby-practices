@@ -66,7 +66,7 @@ class Calendar
       current_date -= @first_date.cwday
     end
 
-    while (current_date <=> last_date) != 0
+    while (current_date <=> last_date) < 1
 
       unless current_date.month == @first_date.month
         print(DAY_PADDING + GAP)
