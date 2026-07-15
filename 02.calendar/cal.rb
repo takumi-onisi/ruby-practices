@@ -6,11 +6,7 @@ class Calendar
   GAP = ' '
   DAY_PADDING = ' ' * 2
   OVERALL_WIDTH = ((DAY_PADDING * 7) + (GAP * 6)).length
-  ENGLISH_MONTHS = [ 'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
   JAPANESE_WEEKDAYS = ['日','月','火','水','木','金','土']
-  ENGLISH_WEEKDAYS = ['Su','Mo','Tu','We','Th','Fr','Sa']
-
 
   def initialize(year, month)
     @first_date = Date.new(year, month, 1)
@@ -22,42 +18,28 @@ class Calendar
   end
 
   # カレンダーの月を返す
-  def month_to_show(lang)
-    if lang == 'ja_JP.UTF-8'
-      "#{format_two_digits(@first_date.month)}月"
-    else
-      ENGLISH_MONTHS[@first_date.month - 1]
-    end
+  def month_to_show()
+    "#{format_two_digits(@first_date.month)}月"
   end
 
   # カレンダーのヘッダーを返す
-  def header_contents(lang)
-    if lang == 'ja_JP.UTF-8'
-      month = month_to_show(lang)
-      "#{(DAY_PADDING + GAP) * 2}#{format_two_digits(@first_date.month)}月 #{@first_date.year}"
-    else
-      month = month_to_show(lang)
-      "#{' ' * ((OVERALL_WIDTH - month.length - @first_date.year.to_s.length) / 2)}#{month} #{@first_date.year}"
-    end
+  def header_contents()
+    "#{(DAY_PADDING + GAP) * 2}#{month_to_show} #{@first_date.year}"
   end
 
   # カレンダーの曜日の行を返す
-  def weekdays_row(lang)
-    if lang == 'ja_JP.UTF-8'
-      JAPANESE_WEEKDAYS.join(GAP)
-    else
-      ENGLISH_WEEKDAYS.join(GAP)
-    end
+  def weekdays_row()
+    JAPANESE_WEEKDAYS.join(GAP)
   end
 
   # カレンダーのヘッダーを出力する
-  def print_header(lang)
-    print (header_contents(lang))
+  def print_header()
+    print header_contents
   end
 
   # カレンダーの曜日の行を出力する
-  def print_weekdays(lang)
-    print weekdays_row(lang)
+  def print_weekdays()
+    print weekdays_row
   end
 
   # カレンダーの各日にちを出力する
@@ -106,22 +88,17 @@ month = options['m'] ? options['m'].to_i : Date.today.month
 begin
   calendar = Calendar.new(year, month)
 rescue
-  if ENV['LANG'] == 'ja_JP.UTF-8'
-    puts 'エラー : カレンダーの生成に失敗しました'
-    puts '-yと-mのオプションを正しく渡しているか確認してください'
-  else
-    puts 'Error: Failed to generate the calendar.'
-    puts 'Please check that the -y and -m options are specified correctly.'
-  end
+  puts 'エラー : カレンダーの生成に失敗しました'
+  puts '-yと-mのオプションを正しく渡しているか確認してください'
   exit
 end
 
 # カレンダーの出力
 # 出力する 月 と 年を表示
-calendar.print_header(ENV['LANG'])
+calendar.print_header
 puts
 # 曜日を出力
-calendar.print_weekdays(ENV['LANG'])
+calendar.print_weekdays
 puts
 # カレンダーの各日付を表示
 calendar.print_dates
