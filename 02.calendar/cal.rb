@@ -100,12 +100,12 @@ end
 # カレンダーで表示させる 年 と 月 を初期化
 options = ARGV.getopts('y:', 'm:')
 # 指定がない場合は今日の 年 と 月を使用する
-YEAR = options['y'] ? options['y'].to_i : Date.today.year
-MONTH = options['m'] ? options['m'].to_i : Date.today.month
+year = options['y'] ? options['y'].to_i : Date.today.year
+month = options['m'] ? options['m'].to_i : Date.today.month
 
 # カレンダーインスタンスを生成
 begin
-  calendar = Calendar.new(YEAR, MONTH)
+  calendar = Calendar.new(year, month)
 rescue
   if ENV['LANG'] == 'ja_JP.UTF-8'
     puts 'エラー : カレンダーの生成に失敗しました'
