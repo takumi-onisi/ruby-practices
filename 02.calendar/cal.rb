@@ -18,8 +18,7 @@ class Calendar
 
   # 1桁の数字と2桁の数字の位置揃えのためのパディングを行う
   def format_two_digits(num)
-    buffer = ' ' * (2 - num.to_s.length.to_i)
-    buffer + num.to_s
+    num.to_s.rjust(2)
   end
 
   # カレンダーの月を返す
