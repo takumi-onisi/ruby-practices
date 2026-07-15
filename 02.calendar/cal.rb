@@ -23,7 +23,7 @@ class Calendar
   end
 
   # カレンダーの月を返す
-  def get_month_to_show(lang)
+  def month_to_show(lang)
     if lang == 'ja_JP.UTF-8'
       "#{format_two_digits(@first_date.month)}月"
     else
@@ -32,18 +32,18 @@ class Calendar
   end
 
   # カレンダーのヘッダーを返す
-  def get_header_contents(lang)
+  def header_contents(lang)
     if lang == 'ja_JP.UTF-8'
-      month = get_month_to_show(lang)
+      month = month_to_show(lang)
       "#{(DAY_PADDING + GAP) * 2}#{format_two_digits(@first_date.month)}月 #{@first_date.year}"
     else
-      month = get_month_to_show(lang)
+      month = month_to_show(lang)
       "#{' ' * ((OVERALL_WIDTH - month.length - @first_date.year.to_s.length) / 2)}#{month} #{@first_date.year}"
     end
   end
 
   # カレンダーの曜日の行を返す
-  def get_weekdays_row(lang)
+  def weekdays_row(lang)
     if lang == 'ja_JP.UTF-8'
       JAPANESE_WEEKDAYS.join(GAP)
     else
@@ -53,12 +53,12 @@ class Calendar
 
   # カレンダーのヘッダーを出力する
   def print_header(lang)
-    print (get_header_contents(lang))
+    print (header_contents(lang))
   end
 
   # カレンダーの曜日の行を出力する
   def print_weekdays(lang)
-    print get_weekdays_row(lang)
+    print weekdays_row(lang)
   end
 
   # カレンダーの各日にちを出力する
