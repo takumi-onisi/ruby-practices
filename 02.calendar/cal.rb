@@ -114,6 +114,7 @@ rescue
     puts 'Error: Failed to generate the calendar.'
     puts 'Please check that the -y and -m options are specified correctly.'
   end
+  exit
 end
 
 # カレンダーの出力
