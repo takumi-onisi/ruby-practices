@@ -25,11 +25,14 @@ start_date = first_date.cwday == 7 ? first_date.clone : first_date.clone - first
     print(' ' * 3)
     next
   end
+
+  print date.day.to_s.rjust(2)
+
+  break if date == last_date
+
   if date.saturday?
-    print date.day.to_s.rjust(2)
-    puts if date != last_date
+    puts
   else
-    print date.day.to_s.rjust(2)
     print ' '
   end
 end
