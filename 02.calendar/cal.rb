@@ -18,14 +18,9 @@ end
 puts "#{' ' * 6}#{first_date.month.to_s.rjust(2)}月 #{first_date.year}"
 puts '日 月 火 水 木 金 土'
 
-start_date = first_date.cwday == 7 ? first_date.clone : first_date.clone - first_date.cwday
+print ' ' * 3 * first_date.wday
 
-(start_date..last_date).each do |date|
-  if date.month != first_date.month
-    print(' ' * 3)
-    next
-  end
-
+(first_date..last_date).each do |date|
   print date.day.to_s.rjust(2)
 
   break if date == last_date
