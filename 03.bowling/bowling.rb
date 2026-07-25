@@ -15,9 +15,13 @@ end
 tmp_frames = shots.each_slice(2).to_a.map {|s| s.eql?([10,0]) ? [10] : s}
 frames = tmp_frames.take(9).push tmp_frames[9..-1].flatten
 point = 0
-frames.push([0]).each_cons(3) do |cons_frames|
-  current_points = cons_frames[0]
-  next_points = cons_frames[1].dup.concat cons_frames[2]
+(0..8).each do |i|
+  current_points = frames[i]
+  if i < 8
+    next_points = frames[i+1] + frames[i+2]
+  else
+    next_points = frames[i+1]
+  end
   if current_points[0] == 10
     point += current_points.sum + next_points.take(2).sum
     next
