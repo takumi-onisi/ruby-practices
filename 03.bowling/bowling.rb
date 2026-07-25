@@ -30,4 +30,6 @@ frames.each_cons(2) do |cons_frames|
   end
   point += current_points.sum
 end
+point += frames[9].sum
+
 p point
