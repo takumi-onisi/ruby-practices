@@ -21,7 +21,7 @@ frames.each_cons(2) do |cons_frames|
   current_points = cons_frames[0]
   next_points = cons_frames[1]
   if current_points[0] == 10
-    point += current_points.sum + next_points.sum
+    point += current_points.sum + next_points.take(2).sum
     next
   end
   if current_points.sum == 10
