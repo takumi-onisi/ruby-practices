@@ -12,7 +12,9 @@ scores.each do |s|
   end
 end
 
-frames = shots.each_slice(2).to_a
+sliced_shots = shots.each_slice(2).to_a
+tenth_frame_shots = sliced_shots.drop(9).flat_map {|s| s.eql?([10,0]) ? 10 : s }
+frames = sliced_shots.take(9).push tenth_frame_shots
 
 point = 0
 frames.each_cons(2) do |cons_frames|
