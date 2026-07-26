@@ -1,20 +1,21 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-score = ARGV[0]
-scores = score.split(',')
-shots = []
-scores.each do |s|
-  if s == 'X'
-    shots << 10
-    shots << 0
-  else
-    shots << s.to_i
+frames = Array.new(10) { [] }
+i = 0
+ARGV[0].split(',').each do |score|
+  score = 10 if score == 'X'
+
+  if i > 8
+    frames[i] << score.to_i
+    next
   end
+
+  frames[i] << score.to_i
+
+  i += 1 if frames[i].length == 2 || score == 10
 end
 
-tmp_frames = shots.each_slice(2).to_a.map { |s| s.eql?([10, 0]) ? [10] : s }
-frames = tmp_frames.take(9).push tmp_frames[9..].flatten
 point = 0
 (0..8).each do |i|
   current_points = frames[i]
