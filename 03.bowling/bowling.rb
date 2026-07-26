@@ -35,4 +35,4 @@ point = 0
 end
 point += frames[9].sum
 
-p point
+puts point
