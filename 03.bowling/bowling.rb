@@ -5,13 +5,9 @@ frames = Array.new(10) { [] }
 i = 0
 ARGV[0].split(',').each do |score|
   score = 10 if score == 'X'
-
-  if i > 8
-    frames[i] << score.to_i
-    next
-  end
-
   frames[i] << score.to_i
+
+  next if i > 8
 
   i += 1 if frames[i].length == 2 || score == 10
 end
@@ -24,15 +20,13 @@ point = 0
                 else
                   frames[i + 1]
                 end
-  if current_points[0] == 10
-    point += current_points.sum + next_points.take(2).sum
-    next
-  end
-  if current_points.sum == 10
-    point += current_points.sum + next_points[0]
-    next
-  end
-  point += current_points.sum
+  point += if current_points[0] == 10
+             current_points.sum + next_points.take(2).sum
+           elsif current_points.sum == 10
+             current_points.sum + next_points[0]
+           else
+             current_points.sum
+           end
 end
 point += frames[9].sum
 
