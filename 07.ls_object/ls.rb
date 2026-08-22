@@ -12,11 +12,11 @@ def main
   end
 end
 
-def print_vertical_columns(array, col_count)
-  row_count = (array.length / col_count.to_f).ceil
+def print_vertical_columns(file_names, col_count)
+  row_count = (file_names.length / col_count.to_f).ceil
   row_count.times.each do |row|
     col_count.times.each do |col|
-      elem = array[row + col * row_count]
+      elem = file_names[row + col * row_count]
       print yield(elem) if elem
       print ' '
     end
