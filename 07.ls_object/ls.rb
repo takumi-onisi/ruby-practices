@@ -9,16 +9,20 @@ def main
   command_options = []
   opt.on('-a') { command_options.push :a }
   opt.parse(ARGV)
-  file_names = Dir.children('.')
-  if command_options.include?(:a)
-    file_names.push('.')
-  else
-    file_names = file_names.reject { |f| f[0] == '.' }
-  end
+  file_names = list_entries(command_options)
   file_names = file_names.sort
   max_length = file_names.map(&:length).max
   print_vertical_columns(file_names, OUTPUT_COL_COUNT) do |file_name|
     file_name.ljust(max_length)
+  end
+end
+
+def list_entries(command_options)
+  entries = Dir.children('.')
+  if command_options.include?(:a)
+    entries.push('.')
+  else
+    entries.reject { |f| f[0] == '.' }
   end
 end
 
