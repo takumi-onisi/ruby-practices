@@ -5,16 +5,21 @@ require 'optparse'
 OUTPUT_COL_COUNT = 3
 
 def main
-  opt = OptionParser.new
-  command_options = []
-  opt.on('-a') { command_options.push :a }
-  opt.parse(ARGV)
+  command_options = parse_options
   entry_names = list_entries(command_options)
   entry_names = entry_names.sort
   max_length = entry_names.map(&:length).max
   print_vertical_columns(entry_names, OUTPUT_COL_COUNT) do |file_name|
     file_name.ljust(max_length)
   end
+end
+
+def parse_options
+  command_options = []
+  opt = OptionParser.new
+  opt.on('-a') { command_options.push :a }
+  opt.parse(ARGV)
+  command_options
 end
 
 def list_entries(command_options)
