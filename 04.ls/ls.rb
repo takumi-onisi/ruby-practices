@@ -7,7 +7,7 @@ OUTPUT_COL_COUNT = 3
 def main
   command_options = parse_options
   entry_names = list_entries(command_options)
-  entry_names = entry_names.sort
+  entry_names = command_options.include?(:r) ? entry_names.sort.reverse : entry_names.sort
   max_length = entry_names.map(&:length).max
   print_vertical_columns(entry_names, OUTPUT_COL_COUNT) do |file_name|
     file_name.ljust(max_length)
@@ -18,6 +18,7 @@ def parse_options
   command_options = []
   opt = OptionParser.new
   opt.on('-a') { command_options.push :a }
+  opt.on('-r') { command_options.push :r }
   opt.parse(ARGV)
   command_options
 end
