@@ -58,6 +58,7 @@ def list_entries(command_options, target_path)
   end
   if command_options.include?(:a)
     entries.push({ display_name: '.', path: target_path })
+    entries.push({ display_name: '..', path: File.dirname(File.expand_path(target_path)) })
   else
     entries = entries.reject { |entry| entry[:display_name][0] == '.' }
   end
