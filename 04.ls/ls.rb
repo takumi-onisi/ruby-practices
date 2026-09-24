@@ -24,6 +24,7 @@ def main
     entries = list_entries(command_options, target_path)
     entries = align_entries(entries)
     entries = sort_entries(command_options, entries)
+    puts "total #{entries.map { |entry| entry[:blocks] }.sum / 2}" if paths.length == 1
     display_entries(command_options, entries)
     puts
   end
@@ -74,7 +75,8 @@ def enrich_entries(entries)
       group: stat.gid.then { |id| Etc.getgrgid(id) }.name,
       size: stat.size.to_s,
       mtime: stat.mtime.then { |time| time.strftime('%b %e %H:%M') },
-      link_ref: stat.symlink? ? File.basename(File.realpath(entry[:path])) : ''
+      link_ref: stat.symlink? ? File.basename(File.realpath(entry[:path])) : '',
+      blocks: stat.blocks
     )
   end
 end
