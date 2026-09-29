@@ -52,9 +52,8 @@ end
 
 def list_entries(command_options, target_path)
   entry_names = Dir.children(target_path)
-  entries = []
-  entry_names.each do |entry_name|
-    entries.push({ display_name: entry_name, path: File.join(target_path, entry_name) })
+  entries = entry_names.map do |entry_name|
+    { display_name: entry_name, path: File.join(target_path, entry_name) }
   end
   if command_options.include?(:a)
     entries.push({ display_name: '.', path: target_path })
@@ -83,7 +82,8 @@ def enrich_entries(entries)
 end
 
 def sort_entries(command_options, entries)
-  command_options.include?(:r) ? entries.sort_by { |entry| entry[:display_name] }.reverse : entries.sort_by { |entry| entry[:display_name] }
+  sorted_entries = entries.sort_by { |entry| entry[:display_name] }
+  command_options.include?(:r) ? sorted_entries.reverse : sorted_entries
 end
 
 def format_permission(mode)
@@ -91,13 +91,13 @@ def format_permission(mode)
   9.times do |n|
     p_str = "#{mode & 2**n == 2**n ? PERMISSION_CHARS[n % 3] : '-'}#{p_str}"
   end
-  if mode & 2**9 == 2**9
+  if mode & 0x200 == 0x200
     p_str[-1] = p_str[-1].eql?('x') ? 't' : 'T'
   end
-  if mode & 2**10 == 2**10
+  if mode & 0x400 == 0x400
     p_str[-4] = p_str[-4].eql?('x') ? 's' : 'S'
   end
-  if mode & 2**11 == 2**11
+  if mode & 0x800 == 0x800
     p_str[-7] = p_str[-7].eql?('x') ? 's' : 'S'
   end
   p_str
