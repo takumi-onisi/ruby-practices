@@ -22,9 +22,10 @@ def main
   paths.each do |target_path|
     puts "#{target_path}:" if paths.length > 1
     entries = list_entries(command_options, target_path)
-    entries = align_entries(entries)
     entries = sort_entries(command_options, entries)
-    puts "total #{entries.map { |entry| entry[:blocks] }.sum / 2}" if paths.length == 1
+    entries = enrich_entries(entries) if command_options.include?(:l)
+    entries = align_entries(entries)
+    puts "total #{entries.map { |entry| entry[:blocks].to_i }.sum / 2}" if paths.length == 1
     display_entries(command_options, entries)
     puts
   end
@@ -61,7 +62,7 @@ def list_entries(command_options, target_path)
   else
     entries = entries.reject { |entry| entry[:display_name][0] == '.' }
   end
-  enrich_entries(entries)
+  entries
 end
 
 def enrich_entries(entries)
@@ -113,11 +114,11 @@ def align_entries(entries)
   ]
   copied_entries = entries.map(&:dup)
   align_targets.each do |align_target|
-    align_target[:digit] = copied_entries.map { |copied_entry| copied_entry[align_target[:key]].length }.max
+    align_target[:digit] = copied_entries.map { |copied_entry| copied_entry[align_target[:key]]&.length }.max
   end
   copied_entries.each do |copied_entry|
     align_targets.each do |align_target|
-      copied_entry[align_target[:key]] = copied_entry[align_target[:key]].send(align_target[:method], align_target[:digit])
+      copied_entry[align_target[:key]] = copied_entry[align_target[:key]].send(align_target[:method], align_target[:digit]) if copied_entry[align_target[:key]]
     end
   end
   copied_entries
