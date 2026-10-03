@@ -71,10 +71,10 @@ def enrich_entries(entries)
     entry.merge(
       filetype: FILE_TYPES[stat.ftype] || '?',
       permission: format_permission(stat.mode),
-      nlink: stat.nlink.to_s,
+      nlink: stat.nlink,
       owner: stat.uid.then { |id| Etc.getpwuid(id) }.name,
       group: stat.gid.then { |id| Etc.getgrgid(id) }.name,
-      size: stat.size.to_s,
+      size: stat.size,
       mtime: stat.mtime.then { |time| time.strftime('%b %e %H:%M') },
       link_ref: stat.symlink? ? File.basename(File.realpath(entry[:path])) : '',
       blocks: stat.blocks
@@ -105,23 +105,32 @@ def format_permission(mode)
 end
 
 def align_entries(entries)
-  align_targets = [
-    { key: :nlink, method: :rjust },
-    { key: :owner, method: :ljust },
-    { key: :group, method: :ljust },
-    { key: :size, method: :rjust },
-    { key: :display_name, method: :ljust }
-  ]
+  return entries if entries.empty?
+
   copied_entries = entries.map(&:dup)
-  align_targets.each do |align_target|
-    align_target[:digit] = copied_entries.map { |copied_entry| copied_entry[align_target[:key]]&.length }.max
-  end
+  max_prop_widths = calc_max_prop_widths(copied_entries)
   copied_entries.each do |copied_entry|
-    align_targets.each do |align_target|
-      copied_entry[align_target[:key]] = copied_entry[align_target[:key]].send(align_target[:method], align_target[:digit]) if copied_entry[align_target[:key]]
+    max_prop_widths.each do |prop, width|
+      copied_entry[prop] =
+        if copied_entry[prop].is_a?(Numeric)
+          copied_entry[prop].to_s.rjust(width)
+        elsif copied_entry[prop].is_a?(String)
+          copied_entry[prop].ljust(width)
+        else
+          raise ArgumentError, "unsupported type: #{copied_entry[prop].class}"
+        end
     end
   end
   copied_entries
+end
+
+def calc_max_prop_widths(entries)
+  prop_widths = {}
+  table_headers = entries.first.keys
+  table_headers.each do |prop|
+    prop_widths[prop] = entries.map { |entry| entry[prop].to_s.length }.max
+  end
+  prop_widths
 end
 
 def concat_entry_info(entry)
@@ -131,7 +140,7 @@ def concat_entry_info(entry)
   entry_info = "#{entry_info} #{entry[:group]}"
   entry_info = "#{entry_info} #{entry[:size]}"
   entry_info = "#{entry_info} #{entry[:mtime]}"
-  link_ref = entry[:link_ref].empty? ? '' : " -> #{entry[:link_ref]}"
+  link_ref = entry[:link_ref].strip.empty? ? '' : " -> #{entry[:link_ref]}"
   "#{entry_info} #{entry[:display_name].strip}#{link_ref}"
 end
 
