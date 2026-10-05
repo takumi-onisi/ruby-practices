@@ -25,7 +25,7 @@ def main
     entries = sort_entries(command_options, entries)
     entries = enrich_entries(entries) if command_options.include?(:l)
     entries = align_entries(entries)
-    puts "total #{entries.map { |entry| entry[:blocks].to_i }.sum / 2}" if paths.length == 1
+    puts "total #{entries.map { |entry| entry[:blocks].to_i }.sum / 2}" if command_options.include?(:l)
     display_entries(command_options, entries)
     puts
   end
