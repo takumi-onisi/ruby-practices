@@ -23,9 +23,6 @@ def main
     puts "#{target_path}:" if paths.length > 1
     entries = list_entries(command_options, target_path)
     entries = sort_entries(command_options, entries)
-    entries = enrich_entries(entries) if command_options.include?(:l)
-    entries = align_entries(entries)
-    puts "total #{entries.map { |entry| entry[:blocks].to_i }.sum / 2}" if command_options.include?(:l)
     display_entries(command_options, entries)
     puts
   end
@@ -41,12 +38,17 @@ def parse_options
 end
 
 def display_entries(command_options, entries)
+  if command_options.include?(:l)
+    entries = enrich_entries(entries)
+    puts "total #{entries.map { |entry| entry[:blocks].to_i }.sum / 2}"
+  end
+  max_prop_widths = calc_max_prop_widths(entries)
   output_col_count = command_options.include?(:l) ? 1 : OUTPUT_COL_COUNT
   print_vertical_columns(entries, output_col_count) do |entry|
     if command_options.include?(:l)
-      concat_entry_info(entry)
+      concat_entry_info(entry, max_prop_widths)
     else
-      entry[:display_name]
+      entry[:display_name].ljust(max_prop_widths[:display_name])
     end
   end
 end
@@ -104,26 +106,6 @@ def format_permission(mode)
   p_str
 end
 
-def align_entries(entries)
-  return entries if entries.empty?
-
-  copied_entries = entries.map(&:dup)
-  max_prop_widths = calc_max_prop_widths(copied_entries)
-  copied_entries.each do |copied_entry|
-    max_prop_widths.each do |prop, width|
-      copied_entry[prop] =
-        if copied_entry[prop].is_a?(Numeric)
-          copied_entry[prop].to_s.rjust(width)
-        elsif copied_entry[prop].is_a?(String)
-          copied_entry[prop].ljust(width)
-        else
-          raise ArgumentError, "unsupported type: #{copied_entry[prop].class}"
-        end
-    end
-  end
-  copied_entries
-end
-
 def calc_max_prop_widths(entries)
   prop_widths = {}
   table_headers = entries.first.keys
@@ -133,15 +115,17 @@ def calc_max_prop_widths(entries)
   prop_widths
 end
 
-def concat_entry_info(entry)
-  entry_info = "#{entry[:filetype]}#{entry[:permission]}"
-  entry_info = "#{entry_info} #{entry[:nlink]}"
-  entry_info = "#{entry_info} #{entry[:owner]}"
-  entry_info = "#{entry_info} #{entry[:group]}"
-  entry_info = "#{entry_info} #{entry[:size]}"
-  entry_info = "#{entry_info} #{entry[:mtime]}"
-  link_ref = entry[:link_ref].strip.empty? ? '' : " -> #{entry[:link_ref]}"
-  "#{entry_info} #{entry[:display_name].strip}#{link_ref}"
+def concat_entry_info(entry, max_prop_widths)
+  filetype = entry[:filetype]
+  permission = entry[:permission]
+  nlink = entry[:nlink].to_s.rjust(max_prop_widths[:size])
+  owner = entry[:owner].ljust(max_prop_widths[:owner])
+  group = entry[:group].ljust(max_prop_widths[:group])
+  mtime = entry[:mtime]
+  display_name = entry[:display_name]
+  size = entry[:size].to_s.rjust(max_prop_widths[:size])
+  link_ref = entry[:link_ref].strip.empty? ? '' : "-> #{entry[:link_ref]}"
+  "#{filetype}#{permission} #{nlink} #{owner} #{group} #{size} #{mtime} #{display_name} #{link_ref}"
 end
 
 def print_vertical_columns(entries, col_count)
