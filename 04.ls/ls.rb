@@ -40,14 +40,11 @@ end
 def display_entries(command_options, entries)
   if command_options.include?(:l)
     entries = enrich_entries(entries)
-    puts "total #{entries.map { |entry| entry[:blocks].to_i }.sum / 2}"
-  end
-  max_prop_widths = calc_max_prop_widths(entries)
-  output_col_count = command_options.include?(:l) ? 1 : OUTPUT_COL_COUNT
-  print_vertical_columns(entries, output_col_count) do |entry|
-    if command_options.include?(:l)
-      concat_entry_info(entry, max_prop_widths)
-    else
+    max_prop_widths = calc_max_prop_widths(entries)
+    print_long_format(entries, max_prop_widths)
+  else
+    max_prop_widths = calc_max_prop_widths(entries)
+    print_vertical_columns(entries, OUTPUT_COL_COUNT) do |entry|
       entry[:display_name].ljust(max_prop_widths[:display_name])
     end
   end
@@ -126,6 +123,13 @@ def concat_entry_info(entry, max_prop_widths)
   size = entry[:size].to_s.rjust(max_prop_widths[:size])
   link_ref = entry[:link_ref].strip.empty? ? '' : "-> #{entry[:link_ref]}"
   "#{filetype}#{permission} #{nlink} #{owner} #{group} #{size} #{mtime} #{display_name} #{link_ref}"
+end
+
+def print_long_format(entries, max_prop_widths)
+  puts "total #{entries.map { |entry| entry[:blocks].to_i }.sum / 2}"
+  entries.each do |entry|
+    puts concat_entry_info(entry, max_prop_widths)
+  end
 end
 
 def print_vertical_columns(entries, col_count)
