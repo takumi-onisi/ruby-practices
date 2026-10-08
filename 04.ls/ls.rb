@@ -113,16 +113,18 @@ def calc_max_prop_widths(entries)
 end
 
 def concat_entry_info(entry, max_prop_widths)
-  filetype = entry[:filetype]
-  permission = entry[:permission]
-  nlink = entry[:nlink].to_s.rjust(max_prop_widths[:size])
-  owner = entry[:owner].ljust(max_prop_widths[:owner])
-  group = entry[:group].ljust(max_prop_widths[:group])
-  mtime = entry[:mtime]
-  display_name = entry[:display_name]
-  size = entry[:size].to_s.rjust(max_prop_widths[:size])
-  link_ref = entry[:link_ref].strip.empty? ? '' : "-> #{entry[:link_ref]}"
-  "#{filetype}#{permission} #{nlink} #{owner} #{group} #{size} #{mtime} #{display_name} #{link_ref}"
+  formatted_props = [
+    entry[:filetype] + entry[:permission],
+    entry[:nlink].to_s.rjust(max_prop_widths[:nlink]),
+    entry[:owner].ljust(max_prop_widths[:owner]),
+    entry[:group].ljust(max_prop_widths[:group]),
+    entry[:size].to_s.rjust(max_prop_widths[:size]),
+    entry[:mtime],
+    entry[:display_name],
+    entry[:link_ref].strip.empty? ? '' : "-> #{entry[:link_ref]}"
+  ]
+
+  formatted_props.join(' ')
 end
 
 def print_long_format(entries, max_prop_widths)
