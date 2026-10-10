@@ -23,8 +23,10 @@ def main
     puts "#{target_path}:" if paths.length > 1
     entries = list_entries(command_options, target_path)
     entries = sort_entries(command_options, entries)
-    display_entries(command_options, entries)
-    puts
+    if !entries.empty?
+      display_entries(command_options, entries)
+      puts
+    end
   end
 end
 
