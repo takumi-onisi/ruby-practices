@@ -24,7 +24,7 @@ def main
     entries = list_entries(command_options, target_path)
     entries = sort_entries(command_options, entries)
     display_entries(command_options, entries)
-    puts
+    puts if !entries.empty?
   end
 end
 
@@ -38,14 +38,17 @@ def parse_options
 end
 
 def display_entries(command_options, entries)
+  return if entries.empty?
+
   if command_options.include?(:l)
     entries = enrich_entries(entries)
     max_prop_widths = calc_max_prop_widths(entries)
     print_long_format(entries, max_prop_widths)
   else
-    max_prop_widths = calc_max_prop_widths(entries)
-    print_vertical_columns(entries, OUTPUT_COL_COUNT) do |entry|
-      entry[:display_name].ljust(max_prop_widths[:display_name])
+    row_count = calc_row_count(entries, OUTPUT_COL_COUNT)
+    max_prop_widths_by_column = entries.each_slice(row_count).map { |sliced_entries| calc_max_prop_widths(sliced_entries) }
+    print_vertical_columns(entries, OUTPUT_COL_COUNT) do |entry, col|
+      entry[:display_name].ljust(max_prop_widths_by_column[col][:display_name])
     end
   end
 end
@@ -103,6 +106,10 @@ def format_permission(mode)
   p_str
 end
 
+def calc_row_count(entries, col_count)
+  (entries.length / col_count.to_f).ceil
+end
+
 def calc_max_prop_widths(entries)
   prop_widths = {}
   table_headers = entries.first.keys
@@ -135,12 +142,12 @@ def print_long_format(entries, max_prop_widths)
 end
 
 def print_vertical_columns(entries, col_count)
-  row_count = (entries.length / col_count.to_f).ceil
+  row_count = calc_row_count(entries, col_count)
   row_count.times.each do |row|
     col_count.times.each do |col|
       entry = entries[row + col * row_count]
-      print yield(entry) if entry
-      print ' '
+      print yield(entry, col) if entry
+      print '  '
     end
     puts
   end
