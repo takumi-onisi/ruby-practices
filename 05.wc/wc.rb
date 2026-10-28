@@ -14,74 +14,78 @@ def main
 end
 
 def display_stdin_counts
-  puts requested_counts($stdin.readlines).values.join(' ')
+  puts requested_count($stdin.read).values.join(' ')
 end
 
 def display_file_counts
-  counts_lists = list_file_counts
-  if counts_lists.length > 1
-    total_counts = total_counts(counts_lists)
-    counts_lists.push(total_counts)
+  file_counts = list_file_counts
+  if file_counts.length > 1
+    total_count = total_count(file_counts)
+    file_counts.push(total_count)
   end
-  column_widths = column_widths(counts_lists)
-  counts_lists.map do |counts|
-    puts format_counts(counts, column_widths)
+  column_widths = column_widths(file_counts)
+  file_counts.each do |file_count|
+    puts format_count(file_count, column_widths)
   end
 end
 
 def requested_options
-  [
-    !any_options || OPTIONS['l'] ? :l : nil,
-    !any_options || OPTIONS['w'] ? :w : nil,
-    !any_options || OPTIONS['c'] ? :c : nil
-  ].compact
+  if !any_options
+    %i[l w c]
+  else
+    [
+      OPTIONS['l'] ? :l : nil,
+      OPTIONS['w'] ? :w : nil,
+      OPTIONS['c'] ? :c : nil
+    ].compact
+  end
 end
 
 def any_options
   OPTIONS.any? { |_, value| value }
 end
 
-def requested_counts(input_lines)
+def requested_count(content)
   requested_options.map do |option|
-    [option, send(METHODS[option][:count], input_lines)]
+    [option, send(METHODS[option][:count], content)]
   end.to_h
 end
 
 def list_file_counts
   ARGV.map do |file_name|
-    requested_counts(File.open(file_name, &:readlines)).merge({ file_name: file_name })
+    requested_count(File.read(file_name)).merge({ file_name: })
   end
 end
 
-def count_newlines(input_lines)
-  input_lines.length
+def count_newlines(content)
+  content.lines.to_a.length
 end
 
-def count_words(input_lines)
-  input_lines.join.split.length
+def count_words(content)
+  content.split.length
 end
 
-def count_bytes(input_lines)
-  input_lines.join.bytesize
+def count_bytes(content)
+  content.bytesize
 end
 
-def total_counts(counts_lists)
+def total_count(file_counts)
   requested_options.map do |option|
-    [option, counts_lists.sum { |counts| counts[option] }]
+    [option, file_counts.sum { |file_count| file_count[option] }]
   end.to_h.merge({ file_name: 'total' })
 end
 
-def column_widths(counts_lists)
+def column_widths(file_counts)
   requested_options.map do |option|
-    [option, counts_lists.map { |counts| counts[option].to_s.length }.max]
+    [option, file_counts.map { |file_count| file_count[option].to_s.length }.max]
   end.to_h
 end
 
-def format_counts(counts, column_widths)
+def format_count(file_count, column_widths)
   formatted_options = requested_options.map do |option|
-    [option, counts[option].to_s.send(METHODS[option][:align], column_widths[option])]
+    [option, file_count[option].to_s.send(METHODS[option][:align], column_widths[option])]
   end.to_h
-  counts.merge(formatted_options).values.join(' ')
+  file_count.merge(formatted_options).values.join(' ')
 end
 
 main
