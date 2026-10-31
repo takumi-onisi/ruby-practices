@@ -4,9 +4,9 @@
 require 'optparse'
 OPTIONS = ARGV.getopts('l', 'w', 'c')
 METHODS = {
-  l: { count: :count_newlines, align: :rjust, total: :sum },
-  w: { count: :count_words, align: :rjust, total: :sum },
-  c: { count: :count_bytes, align: :rjust, total: :sum }
+  l: { count: :count_newlines },
+  w: { count: :count_words },
+  c: { count: :count_bytes }
 }.freeze
 
 def main
@@ -34,10 +34,10 @@ def requested_options
     %i[l w c]
   else
     [
-      OPTIONS['l'] ? :l : nil,
-      OPTIONS['w'] ? :w : nil,
-      OPTIONS['c'] ? :c : nil
-    ].compact
+      OPTIONS['l'] && :l,
+      OPTIONS['w'] && :w,
+      OPTIONS['c'] && :c
+    ].reject(&:!)
   end
 end
 
@@ -83,7 +83,7 @@ end
 
 def format_count(file_count, column_widths)
   formatted_options = requested_options.map do |option|
-    [option, file_count[option].to_s.send(METHODS[option][:align], column_widths[option])]
+    [option, file_count[option].to_s.rjust(column_widths[option])]
   end.to_h
   file_count.merge(formatted_options).values.join(' ')
 end
